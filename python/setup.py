@@ -44,7 +44,8 @@ modules = [
 			'../src/platform/solidrun/hummingboard_base_pro_sdl.c',
 			'../src/platform/solidrun/hummingboard_gate_edge_dq.c',
 			'../src/platform/solidrun/hummingboard_gate_edge_sdl.c'
-			'../src/platform/radxa/rock4.c',
+			'../src/platform/radxa/rock4.c'
+			'../src/platform/radxa/radxa_cm3_io.c',
 		],
 		include_dirs=['../src/']
 	),
