@@ -1,13 +1,13 @@
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 3.12.0)
 
 project(wiringX C)
 
-set(PROJECT_VERSION 1.0)
+set(PROJECT_VERSION 2.0)
 set(PROJECT_NAME wiringX)
 
 set(CMAKE_BUILD_TYPE Release)
 
-find_program(PYTHON "python")
+find_package(Python COMPONENTS Interpreter Development)
 
 set(CMAKE_SKIP_RULE_DEPENDENCY TRUE)
 
@@ -29,27 +29,27 @@ execute_process(COMMAND git log --oneline
 	COMMAND xargs printf %d
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	RESULT_VARIABLE git_result
-	OUTPUT_VARIABLE git_commits)	
+	OUTPUT_VARIABLE git_commits)
 
 STRING(REGEX REPLACE "\n" "" git_ver "${git_ver}")
 add_definitions(-DHASH="${git_ver}")
 
 include_directories(${PROJECT_SOURCE_DIR}/src/)
+include_directories("${Python_INCLUDE_DIRS}")
 
 install(
-	CODE "file(GLOB folder \"${CMAKE_BINARY_DIR}/lib.*\")"
-	CODE "file(INSTALL \${folder}/wiringX/gpio.so DESTINATION /usr/local/lib/python2.7/dist-packages/wiringX)"
-	CODE "file(INSTALL \${folder}/wiringX/__init__.py DESTINATION /usr/local/lib/python2.7/dist-packages/wiringX)"
+	CODE "file(GLOB_RECURSE output_files \"${CMAKE_BINARY_DIR}/lib.*\/wiringX/*.so\" \"${CMAKE_BINARY_DIR}/lib.*\/wiringX/__init__.py\")"
+	CODE "file(INSTALL \${output_files} DESTINATION ${Python_SITELIB}/wiringX)"
 )
-install(FILES ${PROJECT_SOURCE_DIR}/PKG-INFO DESTINATION lib/python2.7/dist-packages/ RENAME wiringX-1.0.egg-info)
+install(FILES ${PROJECT_SOURCE_DIR}/PKG-INFO DESTINATION ${Python_SITELIB} RENAME wiringX-${PROJECT_VERSION}.egg-info)
 
 execute_process(COMMAND python setup.py build
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 	RESULT_VARIABLE python_results
 	OUTPUT_VARIABLE python_output)
-	
-set(CPACK_GENERATOR "DEB RPM")
-set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")
+
+set(CPACK_GENERATOR "DEB;RPM")
+set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
 set(CPACK_SOURCE_STRIP_FILES TRUE)
 set(CPACK_STRIP_FILES TRUE)
 set(CPACK_PACKAGE_CONTACT "CurlyMo <info@pilight.org>")
@@ -59,6 +59,5 @@ set(CPACK_PACKAGE_FILE_NAME python-wiringx-${git_commits}-g${git_ver})
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_PACKAGE_DESCRIPTION "Cross-platform GPIO Interface")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cross-platform GPIO Interface")
-set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${PROJECT_SOURCE_DIR}/res/deb/prerm;")
 
 include(CPack)
