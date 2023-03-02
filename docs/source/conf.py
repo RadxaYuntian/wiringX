@@ -23,9 +23,9 @@ import guzzle_sphinx_theme
 # sys.path.insert(0, os.path.abspath('.'))
 
 def setup(app):
-   app.add_css_file('font.min.css')
-   app.add_css_file('custom.css')
-   app.add_js_file('custom.js')
+   app.add_stylesheet('font.min.css')
+   app.add_stylesheet('custom.css')
+   app.add_javascript('custom.js')
 
 # -- General configuration ------------------------------------------------
 
@@ -72,7 +72,7 @@ release = u'7.0'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = "Chinese"
+language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
