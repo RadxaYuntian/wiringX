@@ -5,7 +5,7 @@
    :class: underline
 
 Milk-V DUO
-=========
+==========
 
 +----------------+-----------------+
 | System on Chip | Sophgo CV1800B  |
