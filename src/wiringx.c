@@ -40,7 +40,7 @@
 #include "soc/samsung/exynos5422.h"
 #include "soc/rockchip/rk3399.h"
 #include "soc/rockchip/rk3588.h"
-#include "soc/sophgo/cv180.h"
+#include "soc/sophgo/cv180x.h"
 
 #include "platform/linksprite/pcduino1.h"
 #include "platform/lemaker/bananapi1.h"
@@ -243,7 +243,7 @@ static void wiringXInit(void) {
 	exynos5422Init();
 	rk3399Init();
 	rk3588Init();
-	cv180Init();
+	cv180xInit();
 
 	/* Init all platforms */
 	pcduino1Init();

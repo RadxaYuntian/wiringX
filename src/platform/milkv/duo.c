@@ -23,7 +23,7 @@
 #include "../platform.h"
 #include "duo.h"
 
-struct platform_t *duo = NULL;
+struct platform_t *milkv_duo = NULL;
 
 static int map[] = {
 	/* XGPIOA[28]	XGPIOA[29]	PWR_GPIO[26]	PWR_GPIO[25]	*/
@@ -65,28 +65,28 @@ static int duoValidGPIO(int pin) {
 }
 
 static int duoSetup(void) {
-	duo->soc->setup();
-	duo->soc->setMap(map, _sizeof(map));
-	duo->soc->setIRQ(map, _sizeof(map));
+	milkv_duo->soc->setup();
+	milkv_duo->soc->setMap(map, _sizeof(map));
+	milkv_duo->soc->setIRQ(map, _sizeof(map));
 	return 0;
 }
 
 void milkv_duoInit(void) {
-	platform_register(&duo, "duo");
+	platform_register(&milkv_duo, "milkv_duo");
 
-	duo->soc = soc_get("Sophgo", "CV180");
-	duo->soc->setMap(map, _sizeof(map));
+	milkv_duo->soc = soc_get("Sophgo", "CV180");
+	milkv_duo->soc->setMap(map, _sizeof(map));
 
-	duo->digitalRead = duo->soc->digitalRead;
-	duo->digitalWrite = duo->soc->digitalWrite;
-	duo->pinMode = duo->soc->pinMode;
-	duo->setup = &duoSetup;
+	milkv_duo->digitalRead = milkv_duo->soc->digitalRead;
+	milkv_duo->digitalWrite = milkv_duo->soc->digitalWrite;
+	milkv_duo->pinMode = milkv_duo->soc->pinMode;
+	milkv_duo->setup = &duoSetup;
 
-	duo->isr = duo->soc->isr;
-	duo->waitForInterrupt = duo->soc->waitForInterrupt;
+	milkv_duo->isr = milkv_duo->soc->isr;
+	milkv_duo->waitForInterrupt = milkv_duo->soc->waitForInterrupt;
 
-	duo->selectableFd = duo->soc->selectableFd;
-	duo->gc = duo->soc->gc;
+	milkv_duo->selectableFd = milkv_duo->soc->selectableFd;
+	milkv_duo->gc = milkv_duo->soc->gc;
 
-	duo->validGPIO = &duoValidGPIO;
+	milkv_duo->validGPIO = &duoValidGPIO;
 }

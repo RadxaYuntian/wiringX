@@ -14,7 +14,7 @@
 #include "../soc.h"
 #include "../../wiringx.h"
 
-extern struct soc_t *cv180;
+extern struct soc_t *cv180x;
 
 void cv180Init(void);
 

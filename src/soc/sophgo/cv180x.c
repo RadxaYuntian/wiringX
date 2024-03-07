@@ -17,12 +17,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "cv180.h"
+#include "cv180x.h"
 #include "../../wiringx.h"
 #include "../soc.h"
 #include "../../i2c-dev.h"
 
-#define CV180_GPIO_GROUP_COUNT 4
+#define CV180X_GPIO_GROUP_COUNT 4
 
 const static uintptr_t gpio_register_physical_address[MAX_REG_AREA] = {0x03020000, 0x03021000, 0x03022000, 0x05021000};
 #define GPIO_SWPORTA_DR		0x000	
@@ -38,7 +38,7 @@ static uintptr_t pinmux_register_virtual_address = NULL;
 #define GET_BITS(addr, bit, size) \
 	((*addr & ~(-1 << size) << bit) >> (bit - size))
 
-struct soc_t *cv180 = NULL;
+struct soc_t *cv180x = NULL;
 
 static struct layout_t {
 	char *name;
@@ -92,61 +92,61 @@ static struct layout_t {
 	{"XGPIOC_24",   2, 440, {0x112c, 0x3}, {GPIO_SWPORTA_DDR, 24}, {GPIO_SWPORTA_DR, 24}, FUNCTION_DIGITAL, PINMODE_NOT_SET, 0}, /* GP25 */
 };
 
-static int cv180Setup(void) {
+static int cv180xSetup(void) {
 	int i = 0;
 
-	if((cv180->fd = open("/dev/mem", O_RDWR | O_SYNC)) < 0) {
+	if((cv180x->fd = open("/dev/mem", O_RDWR | O_SYNC)) < 0) {
 		wiringXLog(LOG_ERR, "wiringX failed to open /dev/mem for raw memory access");
 		return -1;
 	}
-	for(i = 0; i < CV180_GPIO_GROUP_COUNT; i++) {
-		if((cv180->gpio[i] = (unsigned char *)mmap(0, cv180->page_size, PROT_READ | PROT_WRITE, MAP_SHARED, cv180->fd, cv180->base_addr[i])) == NULL) {
-			wiringXLog(LOG_ERR, "wiringX failed to map The %s %s GPIO memory address", cv180->brand, cv180->chip);
+	for(i = 0; i < CV180X_GPIO_GROUP_COUNT; i++) {
+		if((cv180x->gpio[i] = (unsigned char *)mmap(0, cv180x->page_size, PROT_READ | PROT_WRITE, MAP_SHARED, cv180x->fd, cv180x->base_addr[i])) == NULL) {
+			wiringXLog(LOG_ERR, "wiringX failed to map The %s %s GPIO memory address", cv180x->brand, cv180x->chip);
 			return -1;
 		}
 	}
-	if((pinmux_register_virtual_address = (unsigned char *)mmap(0, cv180->page_size, PROT_READ | PROT_WRITE, MAP_SHARED, cv180->fd, PINMUX_BASE)) == NULL) {
-		wiringXLog(LOG_ERR, "wiringX failed to map The %s %s CRU memory address", cv180->brand, cv180->chip);
+	if((pinmux_register_virtual_address = (unsigned char *)mmap(0, cv180x->page_size, PROT_READ | PROT_WRITE, MAP_SHARED, cv180x->fd, PINMUX_BASE)) == NULL) {
+		wiringXLog(LOG_ERR, "wiringX failed to map The %s %s CRU memory address", cv180x->brand, cv180x->chip);
 		return -1;
 	}
 
 	return 0;
 }
 
-static char *cv180GetPinName(int pin) {
-	return cv180->layout[pin].name;
+static char *cv180xGetPinName(int pin) {
+	return cv180x->layout[pin].name;
 }
 
-static void cv180SetMap(int *map, size_t size) {
-	cv180->map = map;
-	cv180->map_size = size;
+static void cv180xSetMap(int *map, size_t size) {
+	cv180x->map = map;
+	cv180x->map_size = size;
 }
 
-static void cv180SetIRQ(int *irq, size_t size) {
-	cv180->irq = irq;
-	cv180->irq_size = size;
+static void cv180xSetIRQ(int *irq, size_t size) {
+	cv180x->irq = irq;
+	cv180x->irq_size = size;
 }
 
-struct layout_t *cv180GetLayout(int i, int *mapping) {
+struct layout_t *cv180xGetLayout(int i, int *mapping) {
 	struct layout_t *pin = NULL;
 	unsigned int *grf_reg = NULL;
 	unsigned int iomux_value = 0;
 
 	if(mapping == NULL) {
-		wiringXLog(LOG_ERR, "The %s %s has not yet been mapped", cv180->brand, cv180->chip);
+		wiringXLog(LOG_ERR, "The %s %s has not yet been mapped", cv180x->brand, cv180x->chip);
 		return NULL;
 	}
 	if(wiringXValidGPIO(i) != 0) {
 		wiringXLog(LOG_ERR, "The %i is not the right GPIO number");
 		return NULL;
 	}
-	if(cv180->fd <= 0 || cv180->gpio == NULL) {
-		wiringXLog(LOG_ERR, "The %s %s has not yet been setup by wiringX", cv180->brand, cv180->chip);
+	if(cv180x->fd <= 0 || cv180x->gpio == NULL) {
+		wiringXLog(LOG_ERR, "The %s %s has not yet been setup by wiringX", cv180x->brand, cv180x->chip);
 		return NULL;
 	}
 
-	pin = &cv180->layout[mapping[i]];
-	if(pin->gpio_group < 0 || pin->gpio_group >= CV180_GPIO_GROUP_COUNT) {
+	pin = &cv180x->layout[mapping[i]];
+	if(pin->gpio_group < 0 || pin->gpio_group >= CV180X_GPIO_GROUP_COUNT) {
 		wiringXLog(LOG_ERR, "pin->group out of range: %i, expect 0~3", pin->gpio_group);
 		return NULL;
 	}
@@ -154,24 +154,24 @@ struct layout_t *cv180GetLayout(int i, int *mapping) {
 	return pin;
 }
 
-#define cv180GetPinLayout(i) (cv180GetLayout(i, cv180->map))
-#define cv180GetIrqLayout(i) (cv180GetLayout(i, cv180->irq))
+#define cv180xGetPinLayout(i) (cv180xGetLayout(i, cv180x->map))
+#define cv180xGetIrqLayout(i) (cv180xGetLayout(i, cv180x->irq))
 
-static int cv180DigitalWrite(int i, enum digital_value_t value) {
+static int cv180xDigitalWrite(int i, enum digital_value_t value) {
 	struct layout_t *pin = NULL;
 	unsigned int *data_reg = 0;
 	uint32_t val = 0;
 
-	if((pin = cv180GetPinLayout(i)) == NULL) {
+	if((pin = cv180xGetPinLayout(i)) == NULL) {
 		return -1;
 	}
 
 	if(pin->mode != PINMODE_OUTPUT) {
-		wiringXLog(LOG_ERR, "The %s %s GPIO%d is not set to output mode", cv180->brand, cv180->chip, i);
+		wiringXLog(LOG_ERR, "The %s %s GPIO%d is not set to output mode", cv180x->brand, cv180x->chip, i);
 		return -1;
 	}
 
-	data_reg = (volatile unsigned int *)(cv180->gpio[pin->gpio_group] + pin->data.offset + GPIO_SWPORTA_DR);
+	data_reg = (volatile unsigned int *)(cv180x->gpio[pin->gpio_group] + pin->data.offset + GPIO_SWPORTA_DR);
 	if(value == HIGH) {
 		*data_reg |= (1 << (pin->data.bit));
 	} else if(value == LOW) {
@@ -184,40 +184,40 @@ static int cv180DigitalWrite(int i, enum digital_value_t value) {
 	return 0;
 }
 
-static int cv180DigitalRead(int i) {
+static int cv180xDigitalRead(int i) {
 	struct layout_t *pin = NULL;
 	unsigned int *data_reg = NULL;
 	uint32_t val = 0;
 
-	if((pin = cv180GetPinLayout(i)) == NULL) {
+	if((pin = cv180xGetPinLayout(i)) == NULL) {
 		return -1;
 	}
 
 	if(pin->mode != PINMODE_INPUT) {
-		wiringXLog(LOG_ERR, "The %s %s GPIO%d is not set to input mode", cv180->brand, cv180->chip, i);
+		wiringXLog(LOG_ERR, "The %s %s GPIO%d is not set to input mode", cv180x->brand, cv180x->chip, i);
 		return -1;
 	}
 
-	data_reg = (volatile unsigned int *)(cv180->gpio[pin->gpio_group] + pin->data.offset + GPIO_EXT_PORTA);
+	data_reg = (volatile unsigned int *)(cv180x->gpio[pin->gpio_group] + pin->data.offset + GPIO_EXT_PORTA);
 	val = *data_reg;
 
 	return (int)((val & (1 << pin->data.bit)) >> pin->data.bit);
 }
 
-static int cv180PinMode(int i, enum pinmode_t mode) {
+static int cv180xPinMode(int i, enum pinmode_t mode) {
 	struct layout_t *pin = NULL;
 	unsigned int *pinmux_reg = NULL;
 	unsigned int *dir_reg = NULL;
 	unsigned int mask = 0;
 
-	if((pin = cv180GetPinLayout(i)) == NULL) {
+	if((pin = cv180xGetPinLayout(i)) == NULL) {
 		return -1;
 	}
 
 	pinmux_reg = (volatile unsigned int *) (pinmux_register_virtual_address + pin->pinmux.offset);
 	*pinmux_reg = pin->pinmux.value;
 
-	dir_reg = (volatile unsigned int *)(cv180->gpio[pin->gpio_group] + pin->direction.offset);
+	dir_reg = (volatile unsigned int *)(cv180x->gpio[pin->gpio_group] + pin->direction.offset);
 	if(mode == PINMODE_INPUT) {
 		*dir_reg &= ~(1 << pin->direction.bit);
 	} else if(mode == PINMODE_OUTPUT) {
@@ -232,35 +232,35 @@ static int cv180PinMode(int i, enum pinmode_t mode) {
 	return 0;
 }
 
-static int cv180ISR(int i, enum isr_mode_t mode) {
+static int cv180xISR(int i, enum isr_mode_t mode) {
 	struct layout_t *pin = NULL;
 	char path[PATH_MAX];
 	memset(path, 0, sizeof(path));
 
-	if((pin = cv180GetIrqLayout(i)) == NULL) {
+	if((pin = cv180xGetIrqLayout(i)) == NULL) {
 		return -1;
 	}
 
 	sprintf(path, "/sys/class/gpio/gpio%d", pin->num);
-	if((soc_sysfs_check_gpio(cv180, path)) == -1) {
+	if((soc_sysfs_check_gpio(cv180x, path)) == -1) {
 		sprintf(path, "/sys/class/gpio/export");
-		if(soc_sysfs_gpio_export(cv180, path, pin->num) == -1) {
+		if(soc_sysfs_gpio_export(cv180x, path, pin->num) == -1) {
 			return -1;
 		}
 	}
 
 	sprintf(path, "/sys/devices/platform/%x.gpio/gpiochip%d/gpio/gpio%d/direction", gpio_register_physical_address[pin->gpio_group], pin->gpio_group, pin->num);
-	if(soc_sysfs_set_gpio_direction(cv180, path, "in") == -1) {
+	if(soc_sysfs_set_gpio_direction(cv180x, path, "in") == -1) {
 		return -1;
 	}
 
 	sprintf(path, "/sys/devices/platform/%x.gpio/gpiochip%d/gpio/gpio%d/edge", gpio_register_physical_address[pin->gpio_group], pin->gpio_group, pin->num);
-	if(soc_sysfs_set_gpio_interrupt_mode(cv180, path, mode) == -1) {
+	if(soc_sysfs_set_gpio_interrupt_mode(cv180x, path, mode) == -1) {
 		return -1;
 	}
 
 	sprintf(path, "/sys/devices/platform/%x.gpio/gpiochip%d/gpio/gpio%d/value", gpio_register_physical_address[pin->gpio_group], pin->gpio_group, pin->num);
-	if((pin->fd = soc_sysfs_gpio_reset_value(cv180, path)) == -1) {
+	if((pin->fd = soc_sysfs_gpio_reset_value(cv180x, path)) == -1) {
 		return -1;
 	}
 
@@ -269,37 +269,37 @@ static int cv180ISR(int i, enum isr_mode_t mode) {
 	return 0;
 }
 
-static int cv180WaitForInterrupt(int i, int ms) {
+static int cv180xWaitForInterrupt(int i, int ms) {
 	struct layout_t *pin = NULL;
 
-	if((pin = cv180GetIrqLayout(i)) == NULL) {
+	if((pin = cv180xGetIrqLayout(i)) == NULL) {
 		return -1;
 	}
 
 	if(pin->mode != PINMODE_INTERRUPT) {
-		wiringXLog(LOG_ERR, "The %s %s GPIO %d is not set to interrupt mode", cv180->brand, cv180->chip, i);
+		wiringXLog(LOG_ERR, "The %s %s GPIO %d is not set to interrupt mode", cv180x->brand, cv180x->chip, i);
 		return -1;
 	}
 
-	return soc_wait_for_interrupt(cv180, pin->fd, ms);
+	return soc_wait_for_interrupt(cv180x, pin->fd, ms);
 }
 
-static int cv180GC(void) {
+static int cv180xGC(void) {
 	struct layout_t *pin = NULL;
 	char path[PATH_MAX];
 	int i = 0;
 	memset(path, 0, sizeof(path));
 
-	if(cv180->map != NULL) {
-		for(i = 0; i < cv180->map_size; i++) {
-			pin = &cv180->layout[cv180->map[i]];
+	if(cv180x->map != NULL) {
+		for(i = 0; i < cv180x->map_size; i++) {
+			pin = &cv180x->layout[cv180x->map[i]];
 			if(pin->mode == PINMODE_OUTPUT) {
 				pinMode(i, PINMODE_INPUT);
 			} else if(pin->mode == PINMODE_INTERRUPT) {
 				sprintf(path, "/sys/class/gpio/gpio%d", pin->num);
-				if((soc_sysfs_check_gpio(cv180, path)) == 0) {
+				if((soc_sysfs_check_gpio(cv180x, path)) == 0) {
 					sprintf(path, "/sys/class/gpio/unexport");
-					soc_sysfs_gpio_unexport(cv180, path, pin->num);
+					soc_sysfs_gpio_unexport(cv180x, path, pin->num);
 				}
 			}
 
@@ -311,47 +311,47 @@ static int cv180GC(void) {
 	}
 
 	if(pinmux_register_virtual_address != NULL) {
-		munmap(pinmux_register_virtual_address, cv180->page_size);
+		munmap(pinmux_register_virtual_address, cv180x->page_size);
 		pinmux_register_virtual_address = NULL;
 	}
-	for(i = 0; i < CV180_GPIO_GROUP_COUNT; i++) {
-		if(cv180->gpio[i] != NULL) {
-			munmap(cv180->gpio[i], cv180->page_size);
-			cv180->gpio[i] = NULL;
+	for(i = 0; i < CV180X_GPIO_GROUP_COUNT; i++) {
+		if(cv180x->gpio[i] != NULL) {
+			munmap(cv180x->gpio[i], cv180x->page_size);
+			cv180x->gpio[i] = NULL;
 		}
 	}
 
 	return 0;
 }
 
-static int cv180SelectableFd(int i) {
+static int cv180xSelectableFd(int i) {
 	struct layout_t *pin = NULL;
 
-	if((pin = cv180GetIrqLayout(i)) == NULL) {
+	if((pin = cv180xGetIrqLayout(i)) == NULL) {
 		return -1;
 	}
 
 	return pin->fd;
 }
 
-void cv180Init(void) {
-	soc_register(&cv180, "Sophgo", "CV180");
+void cv180xInit(void) {
+	soc_register(&cv180x, "Sophgo", "CV180X");
 
-	cv180->layout = layout;
+	cv180x->layout = layout;
 
-	cv180->support.isr_modes = ISR_MODE_RISING | ISR_MODE_FALLING | ISR_MODE_BOTH | ISR_MODE_NONE;
-	cv180->page_size = (1024*4);
-	memcpy(cv180->base_addr, gpio_register_physical_address, sizeof(gpio_register_physical_address));
+	cv180x->support.isr_modes = ISR_MODE_RISING | ISR_MODE_FALLING | ISR_MODE_BOTH | ISR_MODE_NONE;
+	cv180x->page_size = (1024*4);
+	memcpy(cv180x->base_addr, gpio_register_physical_address, sizeof(gpio_register_physical_address));
 
-	cv180->gc = &cv180GC;
-	cv180->selectableFd = &cv180SelectableFd;
-	cv180->pinMode = &cv180PinMode;
-	cv180->setup = &cv180Setup;
-	cv180->digitalRead = &cv180DigitalRead;
-	cv180->digitalWrite = &cv180DigitalWrite;
-	cv180->getPinName = &cv180GetPinName;
-	cv180->setMap = &cv180SetMap;
-	cv180->setIRQ = &cv180SetIRQ;
-	cv180->isr = &cv180ISR;
-	cv180->waitForInterrupt = &cv180WaitForInterrupt;
+	cv180x->gc = &cv180xGC;
+	cv180x->selectableFd = &cv180xSelectableFd;
+	cv180x->pinMode = &cv180xPinMode;
+	cv180x->setup = &cv180xSetup;
+	cv180x->digitalRead = &cv180xDigitalRead;
+	cv180x->digitalWrite = &cv180xDigitalWrite;
+	cv180x->getPinName = &cv180xGetPinName;
+	cv180x->setMap = &cv180xSetMap;
+	cv180x->setIRQ = &cv180xSetIRQ;
+	cv180x->isr = &cv180xISR;
+	cv180x->waitForInterrupt = &cv180xWaitForInterrupt;
 }
