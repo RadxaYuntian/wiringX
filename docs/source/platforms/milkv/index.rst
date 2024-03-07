@@ -1,5 +1,5 @@
-MilkV
-=====
+Milk-V
+======
 
 .. toctree::
    :maxdepth: 2
