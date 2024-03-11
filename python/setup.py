@@ -24,7 +24,7 @@ modules = [
 			'../src/soc/nxp/imx6dqrm.c',
 			'../src/soc/samsung/exynos5422.c',
 			'../src/soc/rockchip/rk3399.c',
-			'../src/soc/sophgo/cv180.c',
+			'../src/soc/sophgo/cv180x.c',
 			'../src/platform/platform.c',
 			'../src/platform/hardkernel/odroidc1.c',
 			'../src/platform/hardkernel/odroidc2.c',
