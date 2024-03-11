@@ -33,22 +33,22 @@ static int map[] = {
 			4,			5,			6,			7,
 
 	/* PWR_GPIO[21]	PWR_GPIO[18]	XGPIOC[9]	XGPIOC[10]	*/
-	   	8,			9,			10,			11,
+			8,			9,			10,			11,
 
 	/* XGPIOA[16]	XGPIOA[17]	XGPIOA[14]	XGPIOA[15]	*/
-	  	12,			13,			14,			15,
+			2,			13,			14,			15,
 
 	/* XGPIOA[23]	XGPIOA[24]	XGPIOA[22]	XGPIOA[25]	*/
-	  	16,			17,			18,			19,
+			16,			17,			18,			19,
 
 	/* XGPIOA[27]	XGPIOA[26]	PWR_GPIO[4]   NULL	*/
-	  	20,			21,			22,			-1,
+			20,			21,			22,			-1,
 
 	/* NULL	XGPIOC[24]	XGPIOB[3]	XGPIOB[6]	*/
-	  	-1,			25,			23,			24,
+			-1,			25,			23,			24,
 
 	/* NULL	NULL	NULL	NULL 	*/
-	  	-1,			-1,			-1,			-1
+			-1,			-1,			-1,			-1
 };
 
 #define _sizeof(arr) (sizeof(arr) / sizeof(arr[0]))
@@ -74,7 +74,7 @@ static int duoSetup(void) {
 void milkv_duoInit(void) {
 	platform_register(&milkv_duo, "milkv_duo");
 
-	milkv_duo->soc = soc_get("Sophgo", "CV180");
+	milkv_duo->soc = soc_get("Sophgo", "CV180X");
 	milkv_duo->soc->setMap(map, _sizeof(map));
 
 	milkv_duo->digitalRead = milkv_duo->soc->digitalRead;
