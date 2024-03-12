@@ -4,7 +4,7 @@
 .. role:: underline
    :class: underline
 
-Milk-V DUO
+Milk-V duo
 ==========
 
 +----------------+-----------------+
