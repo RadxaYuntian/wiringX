@@ -253,8 +253,6 @@ static int cv180xPinMode(int i, enum pinmode_t mode) {
 		return -1;
 	}
 
-	printf("pin-name: %s\n", pin->name);
-
 	pinmux_reg = (volatile unsigned int *) (pinmux_register_virtual_address + pin->pinmux.offset);
 	*pinmux_reg = pin->pinmux.value;
 
