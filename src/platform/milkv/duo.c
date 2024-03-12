@@ -45,9 +45,7 @@ static int map[] = {
 			16,			15,			54,			-1,
 
 	/*					XGPIOC[24]	XGPIOB[6]	XGPIOB[3]	*/
-			-1,			49,			21,			22,
-
-			-1,			-1,			-1,			-1
+			-1,			49,			21,			22
 };
 
 #define _sizeof(arr) (sizeof(arr) / sizeof(arr[0]))
