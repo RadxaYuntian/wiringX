@@ -52,7 +52,7 @@ static int map[] = {
 
 #define _sizeof(arr) (sizeof(arr) / sizeof(arr[0]))
 
-static int duoValidGPIO(int pin) {
+static int milkv_duoValidGPIO(int pin) {
 	if(pin >= 0 && pin < _sizeof(map)) {
 		if(map[pin] == -1) {
 			return -1;
@@ -63,7 +63,7 @@ static int duoValidGPIO(int pin) {
 	}
 }
 
-static int duoSetup(void) {
+static int milkv_duoSetup(void) {
 	milkv_duo->soc->setup();
 	milkv_duo->soc->setMap(map, _sizeof(map));
 	milkv_duo->soc->setIRQ(map, _sizeof(map));
@@ -79,7 +79,7 @@ void milkv_duoInit(void) {
 	milkv_duo->digitalRead = milkv_duo->soc->digitalRead;
 	milkv_duo->digitalWrite = milkv_duo->soc->digitalWrite;
 	milkv_duo->pinMode = milkv_duo->soc->pinMode;
-	milkv_duo->setup = &duoSetup;
+	milkv_duo->setup = &milkv_duoSetup;
 
 	milkv_duo->isr = milkv_duo->soc->isr;
 	milkv_duo->waitForInterrupt = milkv_duo->soc->waitForInterrupt;
@@ -87,5 +87,5 @@ void milkv_duoInit(void) {
 	milkv_duo->selectableFd = milkv_duo->soc->selectableFd;
 	milkv_duo->gc = milkv_duo->soc->gc;
 
-	milkv_duo->validGPIO = &duoValidGPIO;
+	milkv_duo->validGPIO = &milkv_duoValidGPIO;
 }
