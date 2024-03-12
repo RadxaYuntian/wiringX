@@ -27,25 +27,25 @@ struct platform_t *milkv_duo = NULL;
 
 static int map[] = {
 	/* XGPIOA[28]	XGPIOA[29]	PWR_GPIO[26]	PWR_GPIO[25]	*/
-			0,			1,			2,			3,
+			17,			18,			64,			63,
 
 	/* PWR_GPIO[19]	PWR_GPIO[20]	PWR_GPIO[23]	PWR_GPIO[22]	*/
-			4,			5,			6,			7,
+			58,			59,			62,			61,
 
 	/* PWR_GPIO[21]	PWR_GPIO[18]	XGPIOC[9]	XGPIOC[10]	*/
-			8,			9,			10,			11,
+			60,			57,			39,			40,
 
 	/* XGPIOA[16]	XGPIOA[17]	XGPIOA[14]	XGPIOA[15]	*/
-			2,			13,			14,			15,
+			9,			10,			7,			8,
 
 	/* XGPIOA[23]	XGPIOA[24]	XGPIOA[22]	XGPIOA[25]	*/
-			16,			17,			18,			19,
+			12,			13,			11,			14,
 
 	/* XGPIOA[27]	XGPIOA[26]	PWR_GPIO[4]   NULL	*/
-			20,			21,			22,			-1,
+			16,			15,			54,			-1,
 
 	/* NULL	XGPIOC[24]	XGPIOB[3]	XGPIOB[6]	*/
-			-1,			25,			23,			24,
+			-1,			49,			33,			22,
 
 	/* NULL	NULL	NULL	NULL 	*/
 			-1,			-1,			-1,			-1
