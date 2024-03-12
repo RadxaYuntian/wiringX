@@ -41,13 +41,12 @@ static int map[] = {
 	/*	XGPIOA[23]	XGPIOA[24]	XGPIOA[22]	XGPIOA[25]	*/
 			12,			13,			11,			14,
 
-	/*	XGPIOA[27]	XGPIOA[26]	PWR_GPIO[4]   NULL	*/
+	/*	XGPIOA[27]	XGPIOA[26]	PWR_GPIO[4]	*/
 			16,			15,			54,			-1,
 
-	/*	NULL	XGPIOC[24]	XGPIOB[6]	XGPIOB[3]	*/
+	/*					XGPIOC[24]	XGPIOB[6]	XGPIOB[3]	*/
 			-1,			49,			21,			22,
 
-	/*	NULL	NULL	NULL	NULL 	*/
 			-1,			-1,			-1,			-1
 };
 
