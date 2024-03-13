@@ -26,7 +26,7 @@
 
 // register data currently unavailable.
 // Assuming each bank contains 32 GPIO lines, we fill them with placeholder data, in case they become available in the future.
-#define GPIO_UNAVAILABLE(x) ({x, 0, 0, {0, 0}, {0, 0}, {0, 0}, FUNCTION_UNKNOWN, 0, 0})
+#define GPIO_UNAVAILABLE(x) {(x), 0, 0, {0, 0}, {0, 0}, {0, 0}, FUNCTION_UNKNOWN, 0, 0}
 
 const static uintptr_t gpio_register_physical_address[MAX_REG_AREA] = {0x03020000, 0x03021000, 0x03022000, 0x05021000};
 #define GPIO_SWPORTA_DR		0x000	
@@ -243,16 +243,16 @@ struct layout_t *cv180xGetLayout(int i, int *mapping) {
 		wiringXLog(LOG_ERR, "The %i is not the right GPIO number");
 		return NULL;
 	}
-	if(pin->support == FUNCTION_UNKNOWN) {
-		wiringXLog(LOG_ERR, "The register of %s %s not open yet", cv180x->brand, cv180x->chip);
-		return NULL;
-	}
 	if(cv180x->fd <= 0 || cv180x->gpio == NULL) {
 		wiringXLog(LOG_ERR, "The %s %s has not yet been setup by wiringX", cv180x->brand, cv180x->chip);
 		return NULL;
 	}
 
 	pin = &cv180x->layout[mapping[i]];
+	if(pin->support == FUNCTION_UNKNOWN) {
+		wiringXLog(LOG_ERR, "The register of %s %s not open yet", cv180x->brand, cv180x->chip);
+		return NULL;
+	}
 	if(pin->gpio_group < 0 || pin->gpio_group >= CV180X_GPIO_GROUP_COUNT) {
 		wiringXLog(LOG_ERR, "pin->group out of range: %i, expect 0~3", pin->gpio_group);
 		return NULL;
