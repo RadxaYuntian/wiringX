@@ -8,8 +8,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
-#ifndef __WIRINGX_CV180_H
-#define __WIRINGX_CV180_H
+#ifndef __WIRINGX_CV180X_H
+#define __WIRINGX_CV180X_H
 
 #include "../soc.h"
 #include "../../wiringx.h"
