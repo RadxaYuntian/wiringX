@@ -16,6 +16,6 @@
 
 extern struct soc_t *cv180x;
 
-void cv180Init(void);
+void cv180xInit(void);
 
 #endif
