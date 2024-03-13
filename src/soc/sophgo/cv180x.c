@@ -243,6 +243,10 @@ struct layout_t *cv180xGetLayout(int i, int *mapping) {
 		wiringXLog(LOG_ERR, "The %i is not the right GPIO number");
 		return NULL;
 	}
+	if(pin->support == FUNCTION_UNKNOWN) {
+		wiringXLog(LOG_ERR, "The register of %s %s not open yet", cv180x->brand, cv180x->chip);
+		return NULL;
+	}
 	if(cv180x->fd <= 0 || cv180x->gpio == NULL) {
 		wiringXLog(LOG_ERR, "The %s %s has not yet been setup by wiringX", cv180x->brand, cv180x->chip);
 		return NULL;
@@ -251,10 +255,6 @@ struct layout_t *cv180xGetLayout(int i, int *mapping) {
 	pin = &cv180x->layout[mapping[i]];
 	if(pin->gpio_group < 0 || pin->gpio_group >= CV180X_GPIO_GROUP_COUNT) {
 		wiringXLog(LOG_ERR, "pin->group out of range: %i, expect 0~3", pin->gpio_group);
-		return NULL;
-	}
-	if(pin->support == FUNCTION_UNKNOWN) {
-		wiringXLog(LOG_ERR, "The register not open yet", pin->gpio_group);
 		return NULL;
 	}
 
