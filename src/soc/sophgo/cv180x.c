@@ -24,8 +24,9 @@
 
 #define CV180X_GPIO_GROUP_COUNT 4
 
-// registers not open yet
-#define UNKNOWN_COMMON_VALUES 0, {0x0, 0x0}, {GPIO_SWPORTA_DDR, 0}, {GPIO_SWPORTA_DR, 0}, FUNCTION_UNKNOWN, PINMODE_NOT_SET, 0
+// register data currently unavailable.
+// Assuming each bank contains 32 GPIO lines, we fill them with placeholder data, in case they become available in the future.
+#define GPIO_UNAVAILABLE(x) ({x, 0, 0, {0, 0}, {0, 0}, {0, 0}, FUNCTION_UNKNOWN, 0, 0})
 
 const static uintptr_t gpio_register_physical_address[MAX_REG_AREA] = {0x03020000, 0x03021000, 0x03022000, 0x05021000};
 #define GPIO_SWPORTA_DR		0x000	
@@ -67,7 +68,7 @@ static struct layout_t {
 	enum pinmode_t mode;
 	int fd;
 } layout[] = {
-	{"UNKNOWN_XGPIOA_0", 0, UNKNOWN_COMMON_VALUES},
+	GPIO_UNAVAILABLE("XGPIOA_0"),
 	{"UNKNOWN_XGPIOA_1", 0, UNKNOWN_COMMON_VALUES},
 	{"UNKNOWN_XGPIOA_2", 0, UNKNOWN_COMMON_VALUES},
 	{"UNKNOWN_XGPIOA_3", 0, UNKNOWN_COMMON_VALUES},
