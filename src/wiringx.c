@@ -64,6 +64,7 @@
 #include "platform/radxa/rock4.h"
 #include "platform/radxa/rock5b.h"
 #include "platform/milkv/duo.h"
+#include "platform/milkv/meles.h"
 
 void wiringXDefaultLog(int prio, char *file, int line, const char *format_str, ...);
 
@@ -244,6 +245,7 @@ static void wiringXInit(void) {
 	rk3399Init();
 	rk3588Init();
 	cv180xInit();
+	th1520Init();
 
 	/* Init all platforms */
 	pcduino1Init();
@@ -268,6 +270,7 @@ static void wiringXInit(void) {
 	rock4Init();
 	rock5bInit();
 	milkv_duoInit();
+	milkv_melesInit();
 }
 
 EXPORT int wiringXSetup(char *name, void (*func)(int, char *, int, const char *, ...)) {

@@ -5,3 +5,4 @@ Milk-V
    :maxdepth: 2
 
    duo
+   meles
